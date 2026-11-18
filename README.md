@@ -34,6 +34,12 @@ Aplicación web interactiva desarrollada para la materia de Lenguaje de Programa
 
 - (https://pagina-web-ordenamiento.vercel.app/)
 
+--- 
+
+## Captura de Vercel
+  
+![Interfaz de la pagina funcionando en Vercel](InterfazPagina.png)
+
  ---
 
  ## Licencia
