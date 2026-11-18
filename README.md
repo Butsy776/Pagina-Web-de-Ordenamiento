@@ -6,9 +6,9 @@ Aplicación web interactiva desarrollada para la materia de Lenguaje de Programa
 
 ## Características Principales
 
-* ** Algoritmo Quicksort:** Ordenamiento eficiente de productos por ID, Nombre, Menor Precio y Mayor Precio (con soporte completo para caracteres especiales y acentos).
-* ** Búsqueda Binaria:** Localización optimizada de productos mediante ID utilizando precondición de ordenamiento previo.
-* ** Benchmark de Rendimiento:** Comparativa en tiempo real entre **Quicksort** y **Bubble Sort** procesando una muestra masiva de 1,000 elementos aleatorios en milisegundos (`ms`).
+* **Algoritmo Quicksort:** Ordenamiento eficiente de productos por ID, Nombre, Menor Precio y Mayor Precio (con soporte completo para caracteres especiales y acentos).
+* **Búsqueda Binaria:** Localización optimizada de productos mediante ID utilizando precondición de ordenamiento previo.
+* **Benchmark de Rendimiento:** Comparativa en tiempo real entre **Quicksort** y **Bubble Sort** procesando una muestra masiva de 1,000 elementos aleatorios en milisegundos (`ms`).
 
 ---
 
