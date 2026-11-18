@@ -1,0 +1,17 @@
+[
+  {"id": 11, "nombre": "Tarjeta Gráfica RTX", "precio": 550},
+  {"id": 4, "nombre": "Auriculares Inalámbricos", "precio": 120},
+  {"id": 15, "nombre": "Gabinete Gaming RGB", "precio": 80},
+  {"id": 2, "nombre": "Ratón Gamer", "precio": 45},
+  {"id": 9, "nombre": "Disco SSD 1TB", "precio": 90},
+  {"id": 6, "nombre": "Cámara Web HD", "precio": 60},
+  {"id": 13, "nombre": "Placa Base ATX", "precio": 160},
+  {"id": 1, "nombre": "Teclado Mecánico", "precio": 85},
+  {"id": 8, "nombre": "Silla Ergonómica", "precio": 240},
+  {"id": 14, "nombre": "Fuente de Poder 750W", "precio": 110},
+  {"id": 5, "nombre": "Alfombrilla XXL", "precio": 25},
+  {"id": 12, "nombre": "Procesador 8 Núcleos", "precio": 280},
+  {"id": 3, "nombre": "Monitor 4K", "precio": 350},
+  {"id": 10, "nombre": "Memoria RAM 16GB", "precio": 65},
+  {"id": 7, "nombre": "Micrófono Condensador", "precio": 95}
+]

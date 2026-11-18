@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Dinámico de Productos - LPII</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #f8fafc;
+            margin-bottom: 25px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #f8fafc;
+            font-size: 16px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+        .btn-grupo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        button, input {
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            font-size: 14px;
+        }
+        /* Botones generales / principales (Verde original) */
+        button {
+            background-color: #238636;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        /* Botón de Búsqueda Binaria */
+        .btn-secundario {
+            background-color: #1f6feb;
+        }
+        .btn-secundario:hover {
+            background-color: #388bfd;
+        }
+        /* Botón de Benchmark */
+        .btn-benchmark {
+            background-color: #8957e5;
+        }
+        .btn-benchmark:hover {
+            background-color: #9c6ade;
+        }
+        input {
+            background-color: #0f172a;
+            color: white;
+            width: 200px;
+            border: 1px solid #334155;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+        th {
+            background-color: #1e293b;
+            color: #f8fafc;
+        }
+        tr:hover {
+            background-color: #273548;
+        }
+        #resultado-busqueda, #resultado-benchmark {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Catálogo Dinámico de Productos</h1>
+
+        <!-- Sección 1: Opciones de Ordenamiento -->
+        <div class="card">
+            <h3> Opciones de Ordenamiento (Quicksort)</h3>
+            <div class="btn-grupo">
+                <button onclick="cargar('id', 'asc')">Ordenar por ID</button>
+                <button onclick="cargar('precio', 'asc')">Ordenar por Menor Precio</button>
+                <button onclick="cargar('precio', 'desc')">Ordenar por Mayor Precio</button>
+                <button onclick="cargar('nombre', 'asc')">Ordenar por Nombre</button>
+            </div>
+        </div>
+
+        <!-- Sección 2: Búsqueda Binaria -->
+        <div class="card">
+            <h3> Búsqueda por ID (Búsqueda Binaria)</h3>
+            <div class="btn-grupo" style="align-items: center;">
+                <input type="number" id="inputId" placeholder="Ingrese ID (ej. 8)...">
+                <button class="btn-secundario" onclick="buscarPorId()">Buscar Producto</button>
+            </div>
+            <div id="resultado-busqueda"></div>
+        </div>
+
+        <!-- Sección 3: Benchmark -->
+        <div class="card">
+            <h3>Quicksort vs Bubble Sort (Benchmark)</h3>
+            <button class="btn-benchmark" onclick="ejecutarBenchmark()">Ejecutar Comparativa (1,000 elementos)</button>
+            <div id="resultado-benchmark"></div>
+        </div>
+
+        <!-- Sección 4: Tabla Principal -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <table id="tabla">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function cargar(campo, orden) {
+            const res = await fetch(`/api/productos?sort_by=${campo}&order=${orden}`);
+            const data = await res.json();
+            const tbody = document.querySelector('#tabla tbody');
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.nombre}</td>
+                    <td>$${p.precio}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function buscarPorId() {
+            const id = document.getElementById('inputId').value;
+            const contenedor = document.getElementById('resultado-busqueda');
+            
+            if (!id) {
+                alert("Por favor ingresa un ID válido");
+                return;
+            }
+
+            const res = await fetch(`/api/productos/buscar?id=${id}`);
+            contenedor.style.display = 'block';
+
+            if (res.ok) {
+                const p = await res.json();
+                contenedor.innerHTML = `<b style="color: #3fb950;">¡Producto encontrado!</b> ID: ${p.id} | <b>${p.nombre}</b> | Precio: $${p.precio}`;
+            } else {
+                contenedor.innerHTML = `<b style="color: #f85149;">ID ${id} no encontrado.</b>`;
+            }
+        }
+
+        async function ejecutarBenchmark() {
+            const contenedor = document.getElementById('resultado-benchmark');
+            contenedor.style.display = 'block';
+            contenedor.innerHTML = "Ejecutando pruebas de rendimiento con 1,000 elementos...";
+
+            const res = await fetch('/api/benchmark');
+            const data = await res.json();
+
+            contenedor.innerHTML = `
+                <b>📊 Resultados del Benchmark (${data.elementos} elementos):</b><br>
+                 Quicksort: <code>${data.quicksort_ms} ms</code><br>
+                 Bubble Sort: <code>${data.burbuja_ms} ms</code><br>
+                 <em>${data.comparativa}</em>
+            `;
+        }
+
+        cargar('precio', 'asc');
+    </script>
+</body>
+</html>
