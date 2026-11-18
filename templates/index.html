@@ -48,7 +48,6 @@
             border: 1px solid #334155;
             font-size: 14px;
         }
-        /* Botones generales / principales (Verde original) */
         button {
             background-color: #238636;
             color: white;
@@ -60,14 +59,12 @@
         button:hover {
             background-color: #2ea043;
         }
-        /* Botón de Búsqueda Binaria */
         .btn-secundario {
             background-color: #1f6feb;
         }
         .btn-secundario:hover {
             background-color: #388bfd;
         }
-        /* Botón de Benchmark */
         .btn-benchmark {
             background-color: #8957e5;
         }
@@ -130,7 +127,7 @@
         <div class="card">
             <h3> Búsqueda por ID (Búsqueda Binaria)</h3>
             <div class="btn-grupo" style="align-items: center;">
-                <input type="number" id="inputId" placeholder="Ingrese ID (ej. 8)...">
+                <input type="number" id="inputId" placeholder="Ingrese ID (ej. 1)...">
                 <button class="btn-secundario" onclick="buscarPorId()">Buscar Producto</button>
             </div>
             <div id="resultado-busqueda"></div>
@@ -138,7 +135,7 @@
 
         <!-- Sección 3: Benchmark -->
         <div class="card">
-            <h3>Quicksort vs Bubble Sort (Benchmark)</h3>
+            <h3> Quicksort vs Bubble Sort (Benchmark)</h3>
             <button class="btn-benchmark" onclick="ejecutarBenchmark()">Ejecutar Comparativa (1,000 elementos)</button>
             <div id="resultado-benchmark"></div>
         </div>
@@ -159,52 +156,149 @@
     </div>
 
     <script>
+        // Cargar y ordenar productos en la tabla
         async function cargar(campo, orden) {
-            const res = await fetch(`/api/productos?sort_by=${campo}&order=${orden}`);
-            const data = await res.json();
-            const tbody = document.querySelector('#tabla tbody');
-            tbody.innerHTML = data.map(p => `
-                <tr>
-                    <td>${p.id}</td>
-                    <td>${p.nombre}</td>
-                    <td>$${p.precio}</td>
-                </tr>
-            `).join('');
+            try {
+                const res = await fetch('./productos.json');
+                let data = await res.json();
+
+                data.sort((a, b) => {
+                    let valA = a[campo];
+                    let valB = b[campo];
+                    
+                    if (typeof valA === 'string') {
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+
+                    if (orden === 'asc') {
+                        return valA > valB ? 1 : valA < valB ? -1 : 0;
+                    } else {
+                        return valA < valB ? 1 : valA > valB ? -1 : 0;
+                    }
+                });
+
+                const tbody = document.querySelector('#tabla tbody');
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${p.nombre}</td>
+                        <td>$${p.precio}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error("Error al cargar los productos:", error);
+            }
         }
 
+        // Búsqueda Binaria por ID en el cliente
         async function buscarPorId() {
-            const id = document.getElementById('inputId').value;
+            const id = parseInt(document.getElementById('inputId').value);
             const contenedor = document.getElementById('resultado-busqueda');
+            contenedor.style.display = 'block';
             
-            if (!id) {
-                alert("Por favor ingresa un ID válido");
+            if (isNaN(id)) {
+                contenedor.innerHTML = `<b style="color: #f85149;">Por favor ingresa un ID válido.</b>`;
                 return;
             }
 
-            const res = await fetch(`/api/productos/buscar?id=${id}`);
-            contenedor.style.display = 'block';
+            try {
+                const res = await fetch('./productos.json');
+                let productos = await res.json();
 
-            if (res.ok) {
-                const p = await res.json();
-                contenedor.innerHTML = `<b style="color: #3fb950;">¡Producto encontrado!</b> ID: ${p.id} | <b>${p.nombre}</b> | Precio: $${p.precio}`;
-            } else {
-                contenedor.innerHTML = `<b style="color: #f85149;">ID ${id} no encontrado.</b>`;
+                // Precondición: Ordenar por ID antes de la búsqueda binaria
+                productos.sort((a, b) => a.id - b.id);
+
+                let izquierda = 0;
+                let derecha = productos.length - 1;
+                let encontrado = null;
+
+                while (izquierda <= derecha) {
+                    let medio = Math.floor((izquierda + derecha) / 2);
+                    if (productos[medio].id === id) {
+                        encontrado = productos[medio];
+                        break;
+                    } else if (productos[medio].id < id) {
+                        izquierda = medio + 1;
+                    } else {
+                        derecha = medio - 1;
+                    }
+                }
+
+                if (encontrado) {
+                    contenedor.innerHTML = `<b style="color: #3fb950;">¡Producto encontrado!</b> ID: ${encontrado.id} | <b>${encontrado.nombre}</b> | Precio: $${encontrado.precio}`;
+                } else {
+                    contenedor.innerHTML = `<b style="color: #f85149;">ID ${id} no encontrado.</b>`;
+                }
+            } catch (error) {
+                contenedor.innerHTML = `<b style="color: #f85149;">Error al realizar la búsqueda.</b>`;
             }
         }
 
+        // Algoritmos de ordenamiento para el Benchmark en JS
+        function jsQuicksort(arr, clave) {
+            if (arr.length <= 1) return arr;
+            const pivot = arr[Math.floor(arr.length / 2)][clave];
+            const left = arr.filter(x => x[clave] < pivot);
+            const middle = arr.filter(x => x[clave] === pivot);
+            const right = arr.filter(x => x[clave] > pivot);
+            return [...jsQuicksort(left, clave), ...middle, ...jsQuicksort(right, clave)];
+        }
+
+        function jsBubbleSort(arr, clave) {
+            let a = [...arr];
+            let n = a.length;
+            for (let i = 0; i < n; i++) {
+                let swapped = false;
+                for (let j = 0; j < n - i - 1; j++) {
+                    if (a[j][clave] > a[j+1][clave]) {
+                        let temp = a[j];
+                        a[j] = a[j+1];
+                        a[j+1] = temp;
+                        swapped = true;
+                    }
+                }
+                if (!swapped) break;
+            }
+            return a;
+        }
+
+        // Ejecutar Benchmark
         async function ejecutarBenchmark() {
             const contenedor = document.getElementById('resultado-benchmark');
             contenedor.style.display = 'block';
             contenedor.innerHTML = "Ejecutando pruebas de rendimiento con 1,000 elementos...";
 
-            const res = await fetch('/api/benchmark');
-            const data = await res.json();
+            const total = 1000;
+            let muestra = [];
+            for (let i = 1; i <= total; i++) {
+                muestra.push({
+                    id: i,
+                    nombre: `Item-${i}`,
+                    precio: parseFloat((Math.random() * 998 + 1).toFixed(2))
+                });
+            }
+            // Mezclar aleatoriamente
+            muestra.sort(() => Math.random() - 0.5);
+
+            let muestraQuick = [...muestra];
+            let muestraBubble = [...muestra];
+
+            let t0 = performance.now();
+            jsQuicksort(muestraQuick, 'precio');
+            let msQuicksort = performance.now() - t0;
+
+            let t1 = performance.now();
+            jsBubbleSort(muestraBubble, 'precio');
+            let msBubble = performance.now() - t1;
+
+            let velocidad = msQuicksort > 0 ? (msBubble / msQuicksort).toFixed(1) : 0;
 
             contenedor.innerHTML = `
-                <b>📊 Resultados del Benchmark (${data.elementos} elementos):</b><br>
-                 Quicksort: <code>${data.quicksort_ms} ms</code><br>
-                 Bubble Sort: <code>${data.burbuja_ms} ms</code><br>
-                 <em>${data.comparativa}</em>
+                <b>📊 Resultados del Benchmark (${total} elementos):</b><br>
+                 Quicksort: <code>${msQuicksort.toFixed(4)} ms</code><br>
+                 Bubble Sort: <code>${msBubble.toFixed(4)} ms</code><br>
+                <em>Quicksort fue ${velocidad}x más rápido que BubbleSort</em>
             `;
         }
 
