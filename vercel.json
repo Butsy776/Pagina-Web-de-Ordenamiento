@@ -1,12 +1,12 @@
- {
-  "rewrites": [
+{
+    "rewrites": [
     {
       "source": "/",
-      "destination": "https://01a1ecc0-85ee-761c-9762-c838b8191f4c.mypinata.cloud/ipfs/bafybeiarpya4jrj62jeffcdetxou6a7cx5iznb3fivuvod2ckc5yx65oca/templates/index.html"
+      "destination": "https://black-abstract-antelope-275.mypinata.cloud/ipfs/bafybeib4z6pqgw65mvap6oogcdqkpsmc7zdjcszqm4pyuwq473rba3lh6e/index.html"
     },
     {
       "source": "/(.*)",
-      "destination": "https://01a1ecc0-85ee-761c-9762-c838b8191f4c.mypinata.cloud/ipfs/bafybeiarpya4jrj62jeffcdetxou6a7cx5iznb3fivuvod2ckc5yx65oca/$1"
+      "destination": "https://black-abstract-antelope-275.mypinata.cloud/ipfs/bafybeib4z6pqgw65mvap6oogcdqkpsmc7zdjcszqm4pyuwq473rba3lh6e/$1"
     }
   ]
 }
